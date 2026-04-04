@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0D1B2A">
+
+    <!-- TOP BAR -->
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_marginTop="22dp"
+        android:id="@+id/topBar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="#142A45"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="QDEC Citizen"
+        app:titleTextColor="@android:color/white" />
+
+
+    <!-- USER INFO CARD -->
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardUser"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="14dp"
+        app:cardBackgroundColor="#142A45"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imgProfile"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_police_hat"
+                app:tint="@android:color/white"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_marginStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Welcome"
+                    android:textColor="#BBBBBB"
+                    android:textSize="12sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/tvUser"
+                    android:text="Citizen User"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <!-- ACTION GRID -->
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/actionGrid"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:columnCount="2"
+        app:layout_constraintTop_toBottomOf="@id/cardUser"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- REPORT CRIME -->
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardReport"
+            android:layout_width="0dp"
+            android:layout_height="130dp"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="14dp"
+            app:cardBackgroundColor="#142A45"
+            app:layout_columnWeight="1">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_police_hat"
+                    app:tint="@android:color/white"/>
+
+                <TextView
+                    android:text="Report Crime"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <!-- MY COMPLAINTS -->
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardComplaints"
+            android:layout_width="0dp"
+            android:layout_height="130dp"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="14dp"
+            app:cardBackgroundColor="#142A45"
+            app:layout_columnWeight="1">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_file"
+                    app:tint="@android:color/white"/>
+
+                <TextView
+                    android:text="My Complaints"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:layout_marginTop="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.gridlayout.widget.GridLayout>
+
+
+    <!-- EMERGENCY BUTTON -->
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnEmergency"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:text="Emergency Help"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        app:backgroundTint="#B00020"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
