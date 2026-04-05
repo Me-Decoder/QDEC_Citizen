@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.sujalkatariya.qdec.citizen.complaints.ComplaintEntity
 import com.sujalkatariya.qdec.citizen.databinding.ItemComplaintBinding
+import androidx.core.graphics.toColorInt
 
 class MyComplaintsAdapter :
     RecyclerView.Adapter<MyComplaintsAdapter.VH>() {
@@ -41,13 +42,25 @@ class MyComplaintsAdapter :
         holder.binding.tvType.text = item.fraudType
         holder.binding.tvLocation.text = item.location
 
-        // 🔥 STATUS COLOR
-        if (item.status == "SYNCED") {
-            holder.binding.tvStatus.text = "SYNCED"
-            holder.binding.tvStatus.setTextColor(Color.GREEN)
+        // 🔥 STATUS FIX (REAL FIREBASE STATUS)
+        val status = item.status.uppercase()
+
+        holder.binding.tvStatus.text = status
+
+        when (status) {
+            "ASSIGNED" -> holder.binding.tvStatus.setTextColor("#2196F3".toColorInt()) // Blue
+            "PENDING" -> holder.binding.tvStatus.setTextColor("#FFA000".toColorInt()) // Orange
+            "CLOSED" -> holder.binding.tvStatus.setTextColor("#4CAF50".toColorInt()) // Green
+            else -> holder.binding.tvStatus.setTextColor(Color.GRAY)
+        }
+
+        // 🔥 OFFICER NAME SHOW (MAIN FEATURE 🔥)
+        val officerName = item.assignedOfficerName
+
+        if (!officerName.isNullOrEmpty()) {
+            holder.binding.tvOfficer.text = "Assigned to: $officerName"
         } else {
-            holder.binding.tvStatus.text = "PENDING"
-            holder.binding.tvStatus.setTextColor(Color.YELLOW)
+            holder.binding.tvOfficer.text = "Not assigned yet"
         }
     }
 }

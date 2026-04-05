@@ -8,6 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sujalkatariya.qdec.citizen.DAO.AppDatabase
+import com.sujalkatariya.qdec.citizen.citizen.data.mapper.mapToComplaintEntity
 import com.sujalkatariya.qdec.citizen.citizen.data.model.EvidenceItem
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
@@ -33,26 +34,23 @@ class SyncWorker(
 
         return try {
 
+            // 🔥 STEP 1: Upload local pending complaints
             for (complaint in pendingList) {
 
-                // 🔥 JSON → List
                 val evidenceType =
                     object : TypeToken<List<EvidenceItem>>() {}.type
 
                 val rawList: List<EvidenceItem> =
                     gson.fromJson(complaint.evidenceList, evidenceType)
 
-                // 🔥 JSON → Map
                 val fraudType =
                     object : TypeToken<HashMap<String, String>>() {}.type
 
                 val fraudDetails: HashMap<String, String> =
                     gson.fromJson(complaint.fraudDetails, fraudType)
 
-                // 🔥 📍 EXTRACT LAT LNG
                 val latLng = extractLatLng(complaint.location)
 
-                // 🔥 ☁️ UPLOAD EVIDENCE
                 val updatedEvidenceList = mutableListOf<Map<String, Any>>()
 
                 for (item in rawList) {
@@ -60,11 +58,9 @@ class SyncWorker(
                     val file = File(item.filePath)
                     if (!file.exists()) continue
 
-                    // 🔐 decrypt file
                     val tempFile = EvidenceEncryptionManager
                         .decryptToTempFile(applicationContext, item.filePath)
 
-                    // ☁️ upload
                     val url = uploadSuspend(tempFile.absolutePath)
 
                     updatedEvidenceList.add(
@@ -77,7 +73,6 @@ class SyncWorker(
                     )
                 }
 
-                // 🔥 FINAL FIRESTORE DATA
                 val data = hashMapOf(
 
                     "complaintId" to complaint.complaintId,
@@ -87,7 +82,6 @@ class SyncWorker(
                     "fraudType" to complaint.fraudType,
                     "description" to complaint.description,
 
-                    // 📍 location
                     "location" to complaint.location,
                     "geoPoint" to mapOf(
                         "lat" to latLng.first,
@@ -96,13 +90,9 @@ class SyncWorker(
 
                     "policeStation" to complaint.policeStation,
 
-                    // 📁 evidence
                     "evidenceList" to updatedEvidenceList,
-
-                    // 🔐 fraud details
                     "fraudDetails" to fraudDetails,
 
-                    // 📊 status
                     "status" to "PENDING",
                     "statusHistory" to listOf(
                         mapOf(
@@ -111,9 +101,7 @@ class SyncWorker(
                         )
                     ),
 
-                    // ⚡ optional smart field
                     "priority" to "MEDIUM",
-
                     "timestamp" to System.currentTimeMillis()
                 )
 
@@ -123,9 +111,11 @@ class SyncWorker(
                     .set(data)
                     .await()
 
-                // 🔥 mark synced
                 dao.updateStatus(complaint.complaintId, "SYNCED")
             }
+
+            // 🔥🔥 STEP 2: FETCH FROM FIREBASE → UPDATE LOCAL (MAIN FIX)
+            fetchFromFirebaseAndUpdateLocal(dao)
 
             Result.success()
 
@@ -133,6 +123,29 @@ class SyncWorker(
             Log.e("SYNC", "Error: ${e.message}")
             e.printStackTrace()
             Result.retry()
+        }
+    }
+
+    // 🔥 FETCH + LOCAL UPDATE
+    private suspend fun fetchFromFirebaseAndUpdateLocal(
+        dao: com.sujalkatariya.qdec.citizen.DAO.ComplaintDao
+    ) {
+
+        val firestore = FirebaseFirestore.getInstance()
+
+        val snapshot = firestore.collection("complaints")
+            .get()
+            .await()
+
+        Log.d("SYNC", "Fetching from Firebase: ${snapshot.size()}")
+
+        for (doc in snapshot.documents) {
+
+            val complaint = mapToComplaintEntity(doc)
+
+            dao.insertOrUpdate(complaint)
+
+            Log.d("SYNC", "Updated: ${complaint.complaintId} → ${complaint.assignedOfficerName}")
         }
     }
 

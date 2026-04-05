@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.sujalkatariya.qdec.citizen" />
+                  <option name="mobileSdkAppId" value="1:1098810191215:android:5213baac975a243f93cc9a" />
+                  <option name="projectId" value="qdec-f5acf" />
+                  <option name="projectNumber" value="1098810191215" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -18,5 +18,6 @@ data class ComplaintEntity(
     val policeStation: String,
     val evidenceList: String, // JSON string
     val fraudDetails: String,
-    val status: String
+    val status: String,
+    val assignedOfficerName: String? = null
 )

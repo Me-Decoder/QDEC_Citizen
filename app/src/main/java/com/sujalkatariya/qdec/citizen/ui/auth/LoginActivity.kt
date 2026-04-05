@@ -28,12 +28,6 @@ class LoginActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // 🔥 Auto login check
-        if (auth.currentUser != null) {
-            startActivity(Intent(this, HomeActivity::class.java))
-            finish()
-        }
-
         // 🔥 Google config
         val options = GoogleSignInOptions.Builder(
             GoogleSignInOptions.DEFAULT_SIGN_IN
@@ -43,6 +37,10 @@ class LoginActivity : AppCompatActivity() {
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(this, options)
+
+        // 🔥 FORCE LOGOUT (IMPORTANT 🔐)
+        auth.signOut()
+        googleSignInClient.signOut()
 
         // 🔥 Button click
         binding.btnGoogle.setOnClickListener {

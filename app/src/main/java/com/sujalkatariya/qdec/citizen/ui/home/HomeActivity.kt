@@ -12,6 +12,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
+import com.sujalkatariya.qdec.citizen.R
 import com.sujalkatariya.qdec.citizen.databinding.ActivityHomeBinding
 import com.sujalkatariya.qdec.citizen.ui.MyComplaintsActivity
 import com.sujalkatariya.qdec.citizen.ui.report.ReportCrimeActivity
@@ -64,19 +65,23 @@ class HomeActivity : AppCompatActivity() {
         if (user != null) {
 
             val name = user.displayName ?: "Citizen"
-
-            // 👉 XML ma tvUser j chhe
             binding.tvUser.text = name
 
-            user?.photoUrl?.let {
-                Glide.with(this)
-                    .load(it)
-                    .into(binding.imgProfile) // id change karvu padse
-            }
+            val photoUrl = user.photoUrl
+
+            Glide.with(this)
+                .load(photoUrl)
+                .placeholder(R.drawable.ic_police_hat)
+                .error(R.drawable.ic_police_hat)
+                .fallback(R.drawable.ic_police_hat)
+                .circleCrop()
+                .into(binding.imgProfile)
 
         } else {
-
             binding.tvUser.text = "Guest User"
+
+            // fallback image
+            binding.imgProfile.setImageResource(R.drawable.ic_police_hat)
         }
     }
 

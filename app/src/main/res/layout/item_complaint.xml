@@ -34,11 +34,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
+
+
         <TextView
             android:id="@+id/tvStatus"
             android:text="PENDING"
             android:textStyle="bold"
             android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+        <TextView
+            android:id="@+id/tvOfficer"
+            android:text="Assigned: Not yet"
+            android:textSize="12sp"
+            android:textColor="#6B7280"
+            android:layout_marginTop="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 

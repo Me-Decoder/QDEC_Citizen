@@ -8,7 +8,7 @@ import com.sujalkatariya.qdec.citizen.complaints.ComplaintEntity
 
 @Database(
     entities = [ComplaintEntity::class],
-    version = 2
+    version = 3 // latest version
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -27,7 +27,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "qdec_db"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                    .build()
+
 
                 INSTANCE = instance
                 instance

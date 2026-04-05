@@ -23,6 +23,9 @@ interface ComplaintDao {
 
     @Query("SELECT * FROM complaints WHERE userId = :uid ORDER BY rowid DESC")
     fun getUserComplaints(uid: String): List<ComplaintEntity>
-    
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertOrUpdate(complaint: ComplaintEntity)
+
 
 }
