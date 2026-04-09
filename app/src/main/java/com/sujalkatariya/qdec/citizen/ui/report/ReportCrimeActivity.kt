@@ -11,7 +11,7 @@ import android.location.Location
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -21,8 +21,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.work.Constraints
-import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.google.android.gms.location.LocationServices
@@ -128,24 +126,120 @@ class ReportCrimeActivity : AppCompatActivity() {
 
         binding.btnSubmit.isEnabled = false
 
+        setupRecycler()
+        setupDropdown()
+        setupButtons()
+        setupSubmit()
+
+        checkLocationPermission()
+    }
+
+    // ---------------- PERMISSION FLOW ----------------
+
+    private fun checkLocationPermission() {
+
         if (ActivityCompat.checkSelfPermission(
                 this,
-                Manifest.permission.RECORD_AUDIO
+                Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
 
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.RECORD_AUDIO),
-                200
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                101
             )
+
+        } else {
+            fetchLocation()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 101) {
+
+            if (grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED
+            ) {
+
+                fetchLocation()
+
+            } else {
+
+                Toast.makeText(
+                    this,
+                    "Location permission required",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchLocation()
+    }
+
+    // ---------------- LOCATION ----------------
+
+    private fun fetchLocation() {
+
+        try {
+
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) return
+
+            val client = LocationServices.getFusedLocationProviderClient(this)
+
+            client.lastLocation
+                .addOnSuccessListener { location ->
+
+                    if (location != null) {
+
+                        updateLocationUI(location)
+
+                    } else {
+
+                        Toast.makeText(this, "Turn ON GPS", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+        } catch (e: Exception) {
+            Log.e("LOCATION", "Error: ${e.message}")
+        }
+    }
+
+    private fun updateLocationUI(location: Location) {
+
+        val lat = location.latitude
+        val lng = location.longitude
+
+        binding.etLocation.setText("Lat: $lat , Lng: $lng")
+
+        try {
+
+            val geo = Geocoder(this, Locale.getDefault())
+            val address = geo.getFromLocation(lat, lng, 1)
+
+            val area = address?.get(0)?.subLocality ?: ""
+            val city = address?.get(0)?.locality ?: ""
+
+            binding.etPoliceStation.setText("$area, $city")
+
+        } catch (e: Exception) {
+            Log.e("LOCATION", "Geocoder fail")
         }
 
-        setupRecycler()
-        setupDropdown()
-        setupButtons()
-        setupSubmit()
-        fetchLocation()
+        binding.btnSubmit.isEnabled = true
     }
 
     // ---------------- RECYCLER ----------------
@@ -181,78 +275,13 @@ class ReportCrimeActivity : AppCompatActivity() {
         )
 
         binding.spFraudType.setAdapter(adapter)
-
-        binding.spFraudType.setOnItemClickListener { _, _, position, _ ->
-
-            binding.layoutFraudFields.removeAllViews()
-
-            when (fraudTypes[position]) {
-
-                "UPI Fraud" -> {
-                    addField("Amount Lost")
-                    addField("UPI ID")
-                    addField("Transaction ID")
-                }
-
-                "Credit Card Fraud" -> {
-                    addField("Card Last 4 Digits")
-                    addField("Transaction Amount")
-                }
-
-                "Social Media Scam" -> {
-                    addField("Platform")
-                    addField("Profile Link")
-                }
-
-                "Investment Scam" -> {
-                    addField("Company Name")
-                    addField("Amount Invested")
-                }
-
-                "Other" -> addField("Details")
-            }
-        }
     }
-
-    private fun addField(hint: String) {
-
-        val layout = TextInputLayout(this)
-        val edit = TextInputEditText(this)
-
-        edit.hint = hint
-        edit.tag = hint
-
-        layout.addView(edit)
-        binding.layoutFraudFields.addView(layout)
-    }
-
-    // ---------------- BUTTONS ----------------
 
     private fun setupButtons() {
 
         binding.btnCamera.setOnClickListener { cameraLauncher.launch(null) }
         binding.btnGallery.setOnClickListener { galleryLauncher.launch("image/*") }
         binding.btnDocument.setOnClickListener { documentLauncher.launch("*/*") }
-
-        binding.btnAudio.setOnClickListener {
-
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.RECORD_AUDIO
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                Toast.makeText(this, "Allow mic permission first", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (!isRecording) {
-                startRecording()
-                Toast.makeText(this, "Recording...", Toast.LENGTH_SHORT).show()
-            } else {
-                stopRecording()
-                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     // ---------------- SUBMIT ----------------
@@ -269,40 +298,6 @@ class ReportCrimeActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (binding.etLocation.text.toString().isEmpty()) {
-                Toast.makeText(this, "Location required", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (evidenceList.isEmpty()) {
-                Toast.makeText(this, "Add at least 1 evidence", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val hasAudio = evidenceList.any { it.type == "AUDIO" }
-
-            if (!hasAudio) {
-                Toast.makeText(this, "Audio required", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val fraudDetailsMap = HashMap<String, String>()
-
-            for (i in 0 until binding.layoutFraudFields.childCount) {
-
-                val layout = binding.layoutFraudFields.getChildAt(i) as TextInputLayout
-                val edit = layout.editText
-
-                val key = edit?.tag.toString()
-                val value = edit?.text.toString()
-
-                fraudDetailsMap[key] =
-                    EvidenceEncryptionManager.encryptText(value) ?: ""
-            }
-
-            val encryptedDescription =
-                EvidenceEncryptionManager.encryptText(description) ?: ""
-
             val user = FirebaseAuth.getInstance().currentUser
 
             val complaintId =
@@ -313,11 +308,11 @@ class ReportCrimeActivity : AppCompatActivity() {
                 userId = user?.uid ?: "",
                 userEmail = user?.email ?: "",
                 fraudType = fraudType,
-                description = encryptedDescription,
+                description = description,
                 location = binding.etLocation.text.toString(),
                 policeStation = binding.etPoliceStation.text.toString(),
                 evidenceList = Gson().toJson(evidenceList),
-                fraudDetails = Gson().toJson(fraudDetailsMap),
+                fraudDetails = "{}",
                 status = "PENDING"
             )
 
@@ -327,165 +322,16 @@ class ReportCrimeActivity : AppCompatActivity() {
                     .complaintDao()
                     .insertComplaint(entity)
 
-                val constraints = Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-
-                val work =
-                    OneTimeWorkRequestBuilder<SyncWorker>()
-                        .setConstraints(constraints)
-                        .build()
+                val work = OneTimeWorkRequestBuilder<SyncWorker>().build()
 
                 WorkManager.getInstance(this@ReportCrimeActivity)
                     .enqueue(work)
 
-                Toast.makeText(
-                    this@ReportCrimeActivity,
-                    "Saved locally & syncing...",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this@ReportCrimeActivity, "Saved & syncing", Toast.LENGTH_SHORT).show()
 
-                binding.btnSubmit.isEnabled = false // 🚫 prevent multiple clicks
-
-                AlertDialog.Builder(this@ReportCrimeActivity)
-                    .setTitle("Case Created ✅")
-                    .setMessage("Your Complaint ID:\n$complaintId")
-                    .setCancelable(false)
-                    .setPositiveButton("OK") { _, _ ->
-
-                        // 👉 Go back to main screen
-                        val intent = Intent(this@ReportCrimeActivity, HomeActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-
-                        finish() // 🔥 close current screen
-                    }
-                    .show()
+                startActivity(Intent(this@ReportCrimeActivity, HomeActivity::class.java))
+                finish()
             }
         }
-    }
-
-    // ---------------- RECORDING ----------------
-
-    private fun startRecording() {
-
-        try {
-
-            audioFile = File(cacheDir, "audio_${System.currentTimeMillis()}.m4a")
-
-            mediaRecorder = MediaRecorder().apply {
-
-                setAudioSource(MediaRecorder.AudioSource.MIC)
-                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-                setOutputFile(audioFile!!.absolutePath)
-
-                prepare()
-                start()
-            }
-
-            isRecording = true
-            startMicPulse()
-
-        } catch (e: Exception) {
-
-            e.printStackTrace()
-            Toast.makeText(this, "Mic error / permission issue", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun stopRecording() {
-
-        mediaRecorder?.apply {
-            stop()
-            release()
-        }
-
-        mediaRecorder = null
-        isRecording = false
-
-        stopMicPulse()
-
-        val path = EvidenceEncryptionManager.saveEncryptedFromUri(
-            this,
-            Uri.fromFile(audioFile),
-            "audio_${System.currentTimeMillis()}"
-        )
-
-        evidenceList.add(EvidenceItem("AUDIO", path))
-        evidenceAdapter.notifyDataSetChanged()
-    }
-
-    // ---------------- MIC ANIMATION ----------------
-
-    private fun startMicPulse() {
-
-        binding.micPulse.visibility = View.VISIBLE
-
-        pulseAnimator =
-            ObjectAnimator.ofFloat(binding.micPulse, "alpha", 0.3f, 1f).apply {
-
-                duration = 600L
-
-                repeatCount = ObjectAnimator.INFINITE
-                repeatMode = ObjectAnimator.REVERSE
-
-                start()
-            }
-    }
-
-    private fun stopMicPulse() {
-
-        pulseAnimator?.cancel()
-        binding.micPulse.visibility = View.GONE
-    }
-
-    // ---------------- LOCATION ----------------
-
-    private fun fetchLocation() {
-
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                101
-            )
-            return
-        }
-
-        LocationServices.getFusedLocationProviderClient(this)
-            .lastLocation
-            .addOnSuccessListener { updateLocationUI(it) }
-    }
-
-    private fun updateLocationUI(location: Location?) {
-
-        if (location == null) {
-            Toast.makeText(this, "Turn ON location", Toast.LENGTH_SHORT).show()
-            binding.btnSubmit.isEnabled = false
-            return
-        }
-
-        val lat = location.latitude
-        val lng = location.longitude
-
-        // 🔥 1. FIRST FIELD → LAT LONG
-        binding.etLocation.setText("Lat: $lat , Lng: $lng")
-
-        // 🔥 2. SECOND FIELD → AREA + CITY
-        val geo = Geocoder(this, Locale.getDefault())
-        val address = geo.getFromLocation(lat, lng, 1)
-
-        val area = address?.get(0)?.subLocality ?: ""
-        val city = address?.get(0)?.locality ?: ""
-
-        binding.etPoliceStation.setText("$area, $city")
-
-        binding.btnSubmit.isEnabled = true
     }
 }
