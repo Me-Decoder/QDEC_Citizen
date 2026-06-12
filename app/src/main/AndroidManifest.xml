@@ -20,22 +20,22 @@
         
 
         <activity
-            android:name=".ui.MyComplaintsActivity"
+            android:name="com.sujalkatariya.qdec.citizen.ui.MyComplaintsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.EvidenceViewerActivity"
+            android:name="com.sujalkatariya.qdec2.citizen.ui.EvidenceViewerActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.report.ReportCrimeActivity"
+            android:name="com.sujalkatariya.qdec2.citizen.ui.report.ReportCrimeActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.home.HomeActivity"
+            android:name="com.sujalkatariya.qdec2.citizen.ui.home.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.auth.LoginActivity"
+            android:name="com.sujalkatariya.qdec2.citizen.ui.auth.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".SplashActivity"
+            android:name="com.sujalkatariya.qdec2.citizen.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,6 +43,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -54,5 +56,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
     </application>
+
 
 </manifest>

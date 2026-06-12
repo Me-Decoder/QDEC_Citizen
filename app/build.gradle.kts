@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.sujalkatariya.qdec.citizen"
+    namespace = "com.sujalkatariya.qdec2.citizen"
     compileSdk = 36
 
     buildFeatures{
@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.sujalkatariya.qdec.citizen"
+        applicationId = "com.sujalkatariya.qdec2.citizen"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

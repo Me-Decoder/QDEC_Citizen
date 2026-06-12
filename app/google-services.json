@@ -1,108 +1,41 @@
 {
   "project_info": {
-    "project_number": "1098810191215",
-    "firebase_url": "https://qdec-f5acf-default-rtdb.firebaseio.com",
-    "project_id": "qdec-f5acf",
-    "storage_bucket": "qdec-f5acf.firebasestorage.app"
+    "project_number": "684045878145",
+    "project_id": "new-qdec",
+    "storage_bucket": "new-qdec.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1098810191215:android:6444de29216d0eb493cc9a",
+        "mobilesdk_app_id": "1:684045878145:android:30dcbfeea6081339f21e80",
         "android_client_info": {
-          "package_name": "com.sujalkatariya.qdec"
+          "package_name": "com.sujalkatariya.qdec2.citizen"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1098810191215-547rrtg2ksa4dciap7mt4l39geld5808.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA6pOaTAVvI6nFk-WMLIvWulJMJoKQ34tE"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1098810191215-547rrtg2ksa4dciap7mt4l39geld5808.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1098810191215:android:5213baac975a243f93cc9a",
-        "android_client_info": {
-          "package_name": "com.sujalkatariya.qdec.citizen"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1098810191215-f0mhqkbjj5odffqkbas566dap2la81iq.apps.googleusercontent.com",
+          "client_id": "684045878145-ljaghdvdpociurj6pgh716nmlteeqa4e.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.sujalkatariya.qdec.citizen",
+            "package_name": "com.sujalkatariya.qdec2.citizen",
             "certificate_hash": "3544440c0e5ad4de2391acb0bb5a0cbf2ebf5ee6"
           }
         },
         {
-          "client_id": "1098810191215-547rrtg2ksa4dciap7mt4l39geld5808.apps.googleusercontent.com",
+          "client_id": "684045878145-e503gka6tv72khq9mrqedt1eke92erra.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA6pOaTAVvI6nFk-WMLIvWulJMJoKQ34tE"
+          "current_key": "AIzaSyAz6ibyePJyaSD05A5r0UAFw-KXIuYU9b8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1098810191215-547rrtg2ksa4dciap7mt4l39geld5808.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1098810191215:android:4daaa0d64d26a23b93cc9a",
-        "android_client_info": {
-          "package_name": "com.sujalkatariya.qdec.qdecadmin"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1098810191215-fdfbr697e6d7oq48604uhhutumqb40tv.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.sujalkatariya.qdec.qdecadmin",
-            "certificate_hash": "3544440c0e5ad4de2391acb0bb5a0cbf2ebf5ee6"
-          }
-        },
-        {
-          "client_id": "1098810191215-547rrtg2ksa4dciap7mt4l39geld5808.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA6pOaTAVvI6nFk-WMLIvWulJMJoKQ34tE"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1098810191215-547rrtg2ksa4dciap7mt4l39geld5808.apps.googleusercontent.com",
+              "client_id": "684045878145-e503gka6tv72khq9mrqedt1eke92erra.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
