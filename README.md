@@ -80,7 +80,7 @@ Case Status Updated
 <h2>📸 Screenshots</h2>
 
 <p align="center">
-  <img src="screenshots/login.png" width="250"/>
+  <img src="main/app/src/main/res/drawable/ScreenShots/s1.jpg" width="250"/>
   <img src="screenshots/home.png" width="250"/>
 </p>
 
